@@ -1,11 +1,19 @@
 import { validate, Validatable } from './utils/validation';
 import { autoBind } from './utils/autoBindUtils';
+import {
+  ProjectState,
+  Project,
+  ProjectStatus,
+} from './contextState/projectState';
+
+const projectState = ProjectState.getInstance();
 
 // ProjectList Class
 class ProjectList {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
   element: HTMLElement;
+  assignedProjects: Project[];
 
   constructor(private typeOfProject: 'active' | 'finished') {
     this.templateElement = <HTMLTemplateElement>(
@@ -13,6 +21,7 @@ class ProjectList {
     );
 
     this.hostElement = <HTMLDivElement>document.getElementById('app');
+    this.assignedProjects = [];
 
     const importedNode = document.importNode(
       this.templateElement.content,
@@ -21,8 +30,35 @@ class ProjectList {
     this.element = importedNode.firstElementChild as HTMLElement;
     this.element.id = `${this.typeOfProject}-projects`;
 
+    projectState.addListener((projects: Project[]) => {
+      const relevantProjects = projects.filter((prj) => {
+        {
+          if (this.typeOfProject === 'active') {
+            return prj.status === ProjectStatus.Active;
+          }
+          return prj.status === ProjectStatus.Finished;
+        }
+      });
+      this.assignedProjects = relevantProjects;
+      this.renderProjects();
+    });
+
     this.attach();
     this.renderContent();
+  }
+
+  private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.typeOfProject}-projects-list`
+    )!;
+
+    listEl.innerHTML = '';
+
+    for (const prjItem of this.assignedProjects) {
+      const listItem = document.createElement('li');
+      listItem.textContent = prjItem.title;
+      listEl.appendChild(listItem);
+    }
   }
 
   private renderContent() {
@@ -46,6 +82,7 @@ class ProjectInput {
   titleInputElement: HTMLInputElement;
   descriptionInputElement: HTMLInputElement;
   peopleInputElement: HTMLInputElement;
+  assignedProjects: any[];
 
   constructor() {
     this.templateElement = <HTMLTemplateElement>(
@@ -53,6 +90,7 @@ class ProjectInput {
     );
 
     this.hostElement = <HTMLDivElement>document.getElementById('app');
+    this.assignedProjects = [];
 
     const importedNode = document.importNode(
       this.templateElement.content,
@@ -124,7 +162,7 @@ class ProjectInput {
     const userInput = this.gatherUserInput();
     if (Array.isArray(userInput)) {
       const [title, desc, people] = userInput;
-      console.log(title, desc, people);
+      projectState.addProject(title, desc, people);
       this.clearInputs();
     }
   }
