@@ -1,7 +1,42 @@
 import { validate, Validatable } from './utils/validation';
 import { autoBind } from './utils/autoBindUtils';
 
-console.log(validate);
+// ProjectList Class
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+
+  constructor(private typeOfProject: 'active' | 'finished') {
+    this.templateElement = <HTMLTemplateElement>(
+      document.getElementById('project-list')
+    );
+
+    this.hostElement = <HTMLDivElement>document.getElementById('app');
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    );
+    this.element = importedNode.firstElementChild as HTMLElement;
+    this.element.id = `${this.typeOfProject}-projects`;
+
+    this.attach();
+    this.renderContent();
+  }
+
+  private renderContent() {
+    const listId = `${this.typeOfProject}-projects-list`;
+    this.element.querySelector('ul')!.id = listId;
+    this.element.querySelector(
+      'h2'
+    )!.textContent = `${this.typeOfProject.toUpperCase()} PROJECTS`;
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement('beforeend', this.element);
+  }
+}
 
 // ProjectInput Class
 class ProjectInput {
@@ -101,3 +136,5 @@ class ProjectInput {
 }
 
 const projectInput = new ProjectInput();
+const activeProjectList = new ProjectList('active');
+const finishedProjectList = new ProjectList('finished');
