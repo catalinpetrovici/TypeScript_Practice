@@ -4,7 +4,16 @@ import { Project, ProjectStatus } from '../contextState/projectState';
 import { Component } from '../components/baseClass';
 import { ProjectItem } from './';
 
-export class ProjectList extends Component<HTMLDivElement, HTMLElement> {
+interface DragTarget {
+  dragOverHandler(event: DragEvent): void;
+  dropHandler(event: DragEvent): void;
+  dragLeaveHandler(event: DragEvent): void;
+}
+
+export class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
   assignedProjects: Project[];
 
   constructor(private typeOfProject: 'active' | 'finished') {
@@ -37,6 +46,16 @@ export class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     this.element.querySelector(
       'h2'
     )!.textContent = `${this.typeOfProject.toUpperCase()} PROJECTS`;
+  }
+
+  dragOverHandler(event: DragEvent) {
+    console.log(`dragOverHandler`, event);
+  }
+  dropHandler(event: DragEvent) {
+    console.log(`dropHandler`, event);
+  }
+  dragLeaveHandler(event: DragEvent) {
+    console.log(`dragLeaveHandler`, event);
   }
 
   private renderProjects() {

@@ -1,4 +1,3 @@
-import { ProjectState } from './contextState/projectState';
 import { ProjectList } from './components/ProjectList';
 import { ProjectInput } from './components/ProjectInput';
 
