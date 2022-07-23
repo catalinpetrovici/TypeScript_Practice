@@ -3,6 +3,7 @@ import { projectState } from '../contextState/projectState';
 import { Project, ProjectStatus } from '../contextState/projectState';
 import { Component } from '../components/baseClass';
 import { ProjectItem } from './';
+import { autoBind } from '../utils/autoBindUtils';
 
 interface DragTarget {
   dragOverHandler(event: DragEvent): void;
@@ -26,6 +27,10 @@ export class ProjectList
   }
 
   configure(): void {
+    this.element.addEventListener('dragover', this.dragOverHandler);
+    this.element.addEventListener('dragleave', this.dragLeaveHandler);
+    this.element.addEventListener('drop', this.dropHandler);
+
     projectState.addListener((projects: Project[]) => {
       const relevantProjects = projects.filter((prj) => {
         {
@@ -48,14 +53,30 @@ export class ProjectList
     )!.textContent = `${this.typeOfProject.toUpperCase()} PROJECTS`;
   }
 
+  @autoBind
   dragOverHandler(event: DragEvent) {
-    console.log(`dragOverHandler`, event);
+    if (event.dataTransfer && event.dataTransfer.types[0] === 'text/plain') {
+      event.preventDefault();
+      const listEl = this.element.querySelector('ul')!;
+      listEl.classList.add('droppable');
+    }
   }
+
+  @autoBind
   dropHandler(event: DragEvent) {
-    console.log(`dropHandler`, event);
+    const prjId = event.dataTransfer!.getData('text/plain');
+    projectState.moveProject(
+      prjId,
+      this.typeOfProject === 'active'
+        ? ProjectStatus.Active
+        : ProjectStatus.Finished
+    );
   }
-  dragLeaveHandler(event: DragEvent) {
-    console.log(`dragLeaveHandler`, event);
+
+  @autoBind
+  dragLeaveHandler(_: DragEvent) {
+    const listEl = this.element.querySelector('ul')!;
+    listEl.classList.remove('droppable');
   }
 
   private renderProjects() {
