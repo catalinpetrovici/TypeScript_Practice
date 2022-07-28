@@ -177,4 +177,4 @@ function createCourseGoal(
 // 1. ReadOnly
 
 const firstNames: Readonly<string[]> = ['Max', 'Anna'];
-firstNames.push('Manu'); // ERROR
+// firstNames.push('Manu'); // ERROR
