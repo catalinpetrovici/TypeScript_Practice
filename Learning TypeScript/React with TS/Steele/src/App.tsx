@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { v4 as getId } from 'uuid';
 import Greeter from './components/Greeter';
 import ShoppingList from './components/ShoppingList';
-import Item from './models/item';
 import ShoppingListForm from './components/ShoppingListForm';
-import { v4 as getId } from 'uuid';
+import Item from './models/item';
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
