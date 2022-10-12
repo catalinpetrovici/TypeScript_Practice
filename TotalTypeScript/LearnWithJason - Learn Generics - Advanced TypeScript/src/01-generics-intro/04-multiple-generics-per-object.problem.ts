@@ -1,16 +1,35 @@
-import { expect, it } from "vitest";
-import { Equal, Expect } from "../helpers/type-utils";
+import { expect, it } from 'vitest';
+import { Equal, Expect } from '../helpers/type-utils';
 
-const returnBothOfWhatIPassIn = (params: { a: unknown; b: unknown }) => {};
+// type Params<T1, T2> = {
+//   a: T1;
+//   b: T2;
+// };
 
-it("Should return an object where a -> first and b -> second", () => {
+// const returnBothOfWhatIPassIn = <T1, T2>(params: Params<T1, T2>) => {
+//   return {
+//     first: params.a,
+//     second: params.b,
+//   };
+// };
+
+// OR
+
+const returnBothOfWhatIPassIn = <T, U>(params: { a: T; b: U }) => {
+  return {
+    first: params.a,
+    second: params.b,
+  };
+};
+
+it('Should return an object where a -> first and b -> second', () => {
   const result = returnBothOfWhatIPassIn({
-    a: "a",
+    a: 'a',
     b: 1,
   });
 
   expect(result).toEqual({
-    first: "a",
+    first: 'a',
     second: 1,
   });
 
